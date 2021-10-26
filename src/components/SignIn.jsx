@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { signInWithGoogle } from "./firebase";
+import { signInWithGoogle } from "../firebase";
 
 class SignIn extends Component {
   state = { email: "", password: "" };

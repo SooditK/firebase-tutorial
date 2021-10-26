@@ -1,13 +1,15 @@
-import React from "react";
+import React, { useContext } from "react";
 import Post from "./Post";
 import AddPost from "./AddPost";
+import { PostsContext } from "./providers/PostsProvider";
 
-const Posts = ({ posts, onCreate, onRemove }) => {
+const Posts = () => {
+  const posts = useContext(PostsContext);
   return (
     <section className="Posts">
-      <AddPost onCreate={onCreate} />
+      <AddPost />
       {posts.map((post) => (
-        <Post {...post} onRemove={onRemove} key={post.id} />
+        <Post {...post} key={post.id} />
       ))}
     </section>
   );

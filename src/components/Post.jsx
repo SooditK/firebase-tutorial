@@ -1,25 +1,27 @@
-import React from "react";
+import React, { useContext } from "react";
 
 import moment from "moment";
-import { firestore } from "./firebase";
+import { firestore } from "../firebase";
+import { UserContext } from "./providers/UserProvider";
+import { Link } from "react-router-dom";
 
-const Post = ({
-  id,
-  title,
-  content,
-  user,
-  createdAt,
-  stars,
-  comments,
-  onRemove,
-}) => {
+const belongsToCurrentUser = (currentUser, postAuthor) => {
+  if (!currentUser) return false;
+  return currentUser.uid === postAuthor.uid;
+};
+
+const Post = ({ id, title, content, user, createdAt, stars, comments }) => {
+  const currentUser = useContext(UserContext);
+
   const postRef = firestore.doc(`posts/${id}`);
   const remove = () => postRef.delete();
   const star = () => postRef.update({ favorites: star + 1 });
   return (
     <article className="Post">
       <div className="Post--content">
-        <h3>{title}</h3>
+        <Link to={`/post/${id}`}>
+          <h3>{title}</h3>
+        </Link>
         <div>{content}</div>
       </div>
       <div className="Post--meta">
@@ -40,20 +42,14 @@ const Post = ({
           <p>{moment(createdAt).calendar()}</p>
         </div>
         <div>
-          <button
-            className="star"
-            onClick={() => {
-              firestore
-                .collection("posts")
-                .doc(id)
-                .update({ stars: stars + 1 });
-            }}
-          >
+          <button className="star" onClick={star}>
             Star
           </button>
-          <button className="delete" onClick={() => remove}>
-            Delete
-          </button>
+          {belongsToCurrentUser(currentUser, user) && (
+            <button className="delete" onClick={remove}>
+              Delete
+            </button>
+          )}
         </div>
       </div>
     </article>
